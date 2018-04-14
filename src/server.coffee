@@ -1,4 +1,5 @@
-net     = require 'net'
+net  = require 'net'
+util = require 'util'
 
 module.exports =
 class Server

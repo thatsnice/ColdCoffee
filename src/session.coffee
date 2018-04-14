@@ -6,7 +6,7 @@ cs       = require 'coffeescript'
 module.exports =
 class Session
   @comment: '''
-    Turns a TCP connection into an exchange of commands and results.
+    Turns a TCP connection into an exchange of directives and rendered results.
 
     Refactor opportunities:
      - Split command handling out into its own module
@@ -16,6 +16,7 @@ class Session
 
   constructor: (@socket) ->
     Session.sessions.push @
+
     @socket.setEncoding 'utf8'
     (@readline = readline.createInterface input: @socket, output: @socket)
       .on 'line', (line) =>
