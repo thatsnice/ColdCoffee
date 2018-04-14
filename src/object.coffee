@@ -2,31 +2,18 @@ ColdMethod = require './cmethod'
 
 module.exports =
 class ColdObject
-  constructor: (info = {}) ->
-    { @id
-      @parents = []
-      @vars    = new Set
-      @data    = []
-      @methods = {}
-    } = info
+  constructor: ->
+    @methods = {}
+    @parents = []
+    @data = []
+    @vars = new Set
 
-    unless @id
-      throw new Error "All ColdObject instances must have an id"
+  addParent: (parent) ->
+    if parent.acceptChild @
 
   toString: -> @id.toString()
 
-  freeze: ->
-    JSON.stringify {
-        versionInfo: 'too soon!'
-        @id
-        @parents
-        @data
-        @methods
-      }
-
-  thaw: (frozen) ->
-    new ColdObject frozen
-  defineVar:    (name) ->
+  defineVar: (name) ->
     unless @vars.has name
       @vars.add name
       @data[@][name] = undefined
