@@ -1,13 +1,10 @@
-cs       = require 'coffeescript'
-
-module.export =
+module.exports =
 class LineTransformer
-  constructor: (@next, @transform) ->
+  constructor: (@transform, @next) ->
     if (pattern = @matchLine) instanceof RegExp
       @matchLine = (s) -> s.match pattern
 
-  add: (transform) ->
-    new @constructor @, transform
+  add: (transform) -> new @constructor transform, @
 
   handleLine: (line) ->
     {line, done} = @transform line, matched
