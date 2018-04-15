@@ -1,27 +1,19 @@
 readline = require 'readline'
 util     = require 'util'
 
-cs       = require 'coffeescript'
-
 module.exports =
 class Session
   @comment: '''
     Turns a TCP connection into an exchange of directives and rendered results.
-
-    Refactor opportunities:
-     - Split command handling out into its own module
   '''
 
-  @sessions: []
-
-  constructor: (@socket) ->
-    Session.sessions.push @
-
+  constructor: (@socket, @handlerChain = require './minimal-commands') ->
     @socket.setEncoding 'utf8'
+
     (@readline = readline.createInterface input: @socket, output: @socket)
       .on 'line', (line) =>
         try
-          @lineHandler line
+          @handlerChain.handleLine line
         catch e
           @echoError e
 
