@@ -9,10 +9,7 @@ LineTransformer = require './line-transformer'
 module.exports = undefined
 
 commandChain =
-  new LineTransformer (line) ->
-    debug msg = "No match found for input '#{line}'"
-
-    done: -> @echoError new Error msg
+  new LineTransformer
 
 cmd = (pattern, action) ->
   handler = (line) ->
@@ -23,5 +20,11 @@ cmd = (pattern, action) ->
 
   module.exports = new LineTransformer handler, module.exports
 
-cmd /quit/,                      -> @shutdown()
-cmd /^ *(?:eval|;)(.*)/, ([, e]) -> @eval e
+handlers =
+  eval:     ([, e]) -> @eval e
+  shutdown:         -> @shutdown()
+  default:  ([l, ]) -> @echoError new Error "No match found for input '#{l}'"
+
+cmd //,                  defaultHandler
+cmd /quit/,              shutdownHandler
+cmd /^ *(?:eval|;)(.*)/, evalHandler
