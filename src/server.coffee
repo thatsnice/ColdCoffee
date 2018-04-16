@@ -1,20 +1,20 @@
-net     = require 'net'
+debug = (require './debug') __filename
+
+net  = require 'net'
+util = require 'util'
 
 module.exports =
 class Server
   @defaultPort: 6666
 
-  @start: (opts) -> new @constructor opts
-
   constructor: (opts = {}) ->
-    { @Session = require './session' } = opts
+    { port           = @constructor.defaultPort++
+      @Session       = require './session'
+      sessionHandler = (s) => new @Session s
+    } = opts
 
     (@server = net.createServer())
-      .on 'connection', (s) =>
-        log "New connection:\n#{util.inspect s}"
-        @startSession s
-      .listen port = opts.port ? Server.defaultPort++
+      .on 'connection', sessionHandler
+      .listen port
 
-    log "Server started at localhost:#{port}"
-
-  startSession: (socket) -> new @Session socket
+    debug "Server started at localhost:#{port}"
