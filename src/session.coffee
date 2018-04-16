@@ -1,6 +1,10 @@
 readline = require 'readline'
 util     = require 'util'
 
+cs       = require 'coffeescript'
+
+debug    = (require './debug') __filename
+
 module.exports =
 class Session
   @comment: '''
@@ -13,7 +17,9 @@ class Session
     (@readline = readline.createInterface input: @socket, output: @socket)
       .on 'line', (line) =>
         try
-          @handlerChain.handleLine line
+          action = @handlerChain.handleLine line
+          debug line, action
+          action.call @
         catch e
           @echoError e
 
@@ -21,10 +27,11 @@ class Session
   echo: (s) -> @socket.write s + '\n'
 
   eval: (code) ->
-    log "eval: #{code}"
+    debug "eval: #{code}"
 
     try
-      result = @eval rest
+      fn = cs.eval "-> #{code}"
+      result = fn.call @
 
       @echo "=> #{util.inspect result}\n"
 
