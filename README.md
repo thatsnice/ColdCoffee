@@ -4,12 +4,41 @@ ColdMUD-inspired server with CoffeeScript as the (default) VM language
 
 ## v0.1
 
-    telnet localhost 6666
-    ;tmp = $sys.create()
-    ;$sys.checkpoint()
-    ;$sys.restart()
-    telnet localhost 6666
-    ;tmp # displays created object
+Inputs preceded by '> ', outputs by '=> '
+
+    > telnet localhost 6666       # Done
+    > ;3 + 4                      # Done
+    => 7                          # Done
+
+    > ;tmp = $sys.create()
+    => #4
+
+    > ;$sys.checkpoint()
+    => true
+
+    > ;$sys.restart()
+    > telnet localhost 6666
+    > ;tmp
+    => #4
+
+    > @program me.hello
+    => Enter code for new method #2.hello
+      @echo "hello"
+    .
+    => Syntax ok.
+    => #2.hello saved as 'instance/2/hello.coffee'
+
+    > @program me.hello(name)
+    => Enter new code for existing method #2.hello or '.abort' to cancel
+      @echo "Hello #{name}!"
+    .
+    => Syntax ok.
+    => checked in new version of 'instance/2/hello.coffee'
+
+    > @list me.hello
+    => @program #2.hello(name)
+    =>   @echo "Hello #{name}!"
+    => .
 
 # Life cycle of a 'task'
 

@@ -1,30 +1,52 @@
-debug = (require './debug') __filename
+util            = require 'util'
 
-util = require 'util'
+cs              = require 'coffeescript'
 
-cs = require 'coffeescript'
+debug           = (require './debug') __filename
 
 LineTransformer = require './line-transformer'
 
-module.exports = undefined
+module.exports  = null
 
-commandChain =
-  new LineTransformer
+patterns = ->
+  glob:       /// " (?: \\\" | \\\. | [^"] )* " | [^"]* ///
+  whitespace: ///   \s+    ///
+  splat:      /// ^ \*   $ ///
+  notSplat:   /// ^ [^*]   ///
 
-cmd = (pattern, action) ->
-  handler = (line) ->
-    return {line} unless matched = line.match pattern
-    debug "#{util.inspect pattern} =~ #{line}"
+replacer = (pattern, replaceWith) -> (s) -> s.replace pattern, replaceWith
 
-    done: -> action.call @, matched
+replaceOnMatch = (p, fn) ->
+  (s) -> s.replace p, fn
 
-  module.exports = new LineTransformer handler, module.exports
+globToRegexp = (glob) ->
+  { glob, whitespace, splat, notSplat } = patterns
 
-handlers =
-  eval:     ([, e]) -> @eval e
-  shutdown:         -> @shutdown()
-  default:  ([l, ]) -> @echoError new Error "No match found for input '#{l}'"
+  new RegExp (glob.split whitespace
+                  .map replacer notSplat, quoteForPattern
+                  .map replacer    splat, glob
+                  .join matchWhitespace
+  )
 
-cmd //,                  defaultHandler
-cmd /quit/,              shutdownHandler
-cmd /^ *(?:eval|;)(.*)/, evalHandler
+addHandler      = (handler)  -> module.exports = new LineTransformer handler, module.exports
+alias           = (from, to) -> addHandler (line) -> line: line.replace cmdPattern(from), to
+
+cmds = (namesAndActions) ->
+  for name, action of namesAndActions
+    do (name, action) ->
+      name = globToRegep name
+
+      addHandler (line) ->
+        if matched = line.match cmdPattern name
+          debug "#{util.inspect pattern} =~ #{line}"
+          done: -> action.call @, matched
+
+cmds
+  quit:                           -> @shutdown()
+  eval:            ([, e])        -> @eval e
+  say:             ([,      msg]) -> @say msg
+  "to   * say  *": ([, tgt, msg]) -> @sayTo tgt, msg
+  "page * with *": ([, tgt, msg]) -> @page tgt, msg
+
+alias ';', 'eval'
+alias "'", 'page'
