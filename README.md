@@ -6,7 +6,7 @@ ColdMUD-inspired server with CoffeeScript as the (default) VM language
 
 Inputs preceded by '> ', outputs by '=> '
 
-    > telnet localhost 6666       # Done
+    $ cake start
     > ;3 + 4                      # Done
     => 7                          # Done
 
@@ -17,7 +17,7 @@ Inputs preceded by '> ', outputs by '=> '
     => true
 
     > ;$sys.restart()
-    > telnet localhost 6666
+    $ cake start
     > ;tmp
     => #4
 
