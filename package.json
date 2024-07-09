@@ -1,8 +1,8 @@
 {
   "name": "minimal",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.coffee",
   "directories": {
     "test": "test"
   },
@@ -11,15 +11,12 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "coffeescript": "^2.3.0",
-    "debug": "^3.1.0",
-    "ramda": "^0.25.0",
-    "sqlite3": "^4.0.0"
+    "coffeescript": "^2.7.0",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "joe": "^2.0.2",
-    "joe-reporter-console": "^2.0.1"
+    "kava": "^7.9.0"
   }
 }
